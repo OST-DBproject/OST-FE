@@ -18,3 +18,7 @@
   font-weight: 600;
   src: url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/woff2/Pretendard-SemiBold.woff2') format('woff2');
 }
+:root {
+  background-color: #0E130E;
+  font-family: "Pretendard";
+}
