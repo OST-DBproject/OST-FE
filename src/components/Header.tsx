@@ -1,16 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import HeaderActive from "../assets/Header-active.svg";
 import HeaderNormal from "../assets/Header-nomal.svg";
 
 type HeaderProps = {
     isLoggedIn: boolean;
-    nickname?: string;
     onLogout?: () => void;
 };
 
-export default function Header({ isLoggedIn, nickname, onLogout }: HeaderProps) {
+export default function Header({ isLoggedIn, onLogout }: HeaderProps) {
     const [isBookmarkActive, setIsBookmarkActive] = useState(false);
+    const [nickname, setNickname] = useState("");
+
+    useEffect(() => {
+        const stored = localStorage.getItem("nickname");
+        if (stored) setNickname(stored);
+    }, []);
 
     const handleBookmarkClick = () => {
         setIsBookmarkActive((prev) => !prev);
@@ -18,6 +23,7 @@ export default function Header({ isLoggedIn, nickname, onLogout }: HeaderProps) 
 
     const handleLogout = () => {
         onLogout?.();
+        localStorage.removeItem("nickname");
     };
 
     return (
@@ -35,9 +41,16 @@ export default function Header({ isLoggedIn, nickname, onLogout }: HeaderProps) 
                             className="w-8 h-8"
                         />
                     </button>
-                    <span className="text-white text-2xl font-semibold font-pretendard">{nickname ?? "닉네임"}</span>
 
-                    <button type="button" onClick={handleLogout} className="text-hover-white text-2xl font-semibold font-pretendard">
+                    <span className="text-white text-xl font-semibold font-pretendard">
+                        {nickname}
+                    </span>
+
+                    <button
+                        type="button"
+                        onClick={handleLogout}
+                        className="text-hover-white text-xl font-semibold font-pretendard"
+                    >
                         로그아웃
                     </button>
                 </div>

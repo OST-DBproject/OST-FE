@@ -1,37 +1,56 @@
 import LightImg from "../assets/lights.svg";
 
 type LightProps = {
-    variant: "intro" | "main";
+    variant: "intro" | "main" | "home";
     scrollY?: number;
 };
 
 export default function Light({ variant, scrollY = 0 }: LightProps) {
 
-    const introStart = 260;      // 인트로 초기 위치
-    const mainTarget = -220;     // 메인에서 고정되는 위치
+    if (variant === "home") {
+        return (
+            <div
+                className="pointer-events-none fixed z-0"
+                style={{
+                    top: "-100px",
+                    right: "-650px",
+                }}
+            >
+                <img
+                    src={LightImg}
+                    style={{
+                        filter: "blur(50px)",
+                        opacity: 0.9,
+                    }}
+                />
+            </div>
+        );
+    }
 
-    const maxScroll = 800;       // 인트로 → 메인 전환 시점(필요하면 조절)
+
+    const introStartY = 260;
+    const mainTargetY = -220;
+    const maxScroll = 800;
+
     const progress = Math.min(scrollY / maxScroll, 1);
 
-    const smoothY =
+    const yPos =
         variant === "intro"
-            ? introStart + (mainTarget - introStart) * progress
-            : mainTarget;
+            ? introStartY + (mainTargetY - introStartY) * progress
+            : mainTargetY;
 
-    const width = variant === "intro" ? 1400 : 1500;
+    const size = variant === "intro" ? 1400 : 1500;
     const blur = variant === "intro" ? 40 : 60;
 
     return (
         <div
             className="pointer-events-none fixed left-1/2 -translate-x-1/2 z-0"
-            style={{
-                top: smoothY,
-            }}
+            style={{ top: yPos }}
         >
             <img
                 src={LightImg}
                 style={{
-                    width,
+                    width: size,
                     filter: `blur(${blur}px)`
                 }}
             />

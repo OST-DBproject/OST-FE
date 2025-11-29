@@ -59,9 +59,16 @@ export default function MainPage() {
                     지금 바로 Spotify Login을 통해 OST의 기능을 체험해보세요.
                 </p>
 
-                <button className="px-10 py-4 border border-white text-lg hover:border-primary-100 transition-colors">
+                <button
+                    className="px-10 py-4 border border-white text-lg hover:border-primary-100 transition-colors"
+                    onClick={() =>
+                        window.location.href =
+                            `https://accounts.spotify.com/authorize?client_id=${import.meta.env.VITE_SPOTIFY_CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(import.meta.env.VITE_FRONT_REDIRECT_URI)}&scope=user-library-read%20user-library-modify`
+                    }
+                >
                     Spotify Login
                 </button>
+
             </main>
         </div>
     );
