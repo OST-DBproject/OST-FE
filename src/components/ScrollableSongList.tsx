@@ -3,20 +3,24 @@ import SongList from "./SongList";
 import type { Track } from "../types/track";
 
 interface Props {
-    title: string;
+    title?: string;
+    hideTitle?: boolean;  // 🔥 추가
     songs: Track[];
     onSelectSong: (song: Track) => void;
 }
 
-export default function ScrollableSongList({ title, songs, onSelectSong }: Props) {
+export default function ScrollableSongList({ title, hideTitle = false, songs, onSelectSong }: Props) {
     const ref = useRef<HTMLDivElement>(null);
 
     const scrollLeft = () => ref.current?.scrollBy({ left: -300, behavior: "smooth" });
     const scrollRight = () => ref.current?.scrollBy({ left: 300, behavior: "smooth" });
 
     return (
-        <section className="mt-14 relative">
-            <h2 className="text-xl mb-6 font-hs">{title}</h2>
+        <section className="mt-10 relative">
+
+            {!hideTitle && (
+                <h2 className="text-xl mb-6 font-hs">{title}</h2>
+            )}
 
             {/* 왼쪽 버튼 */}
             <button

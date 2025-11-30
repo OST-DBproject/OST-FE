@@ -15,38 +15,91 @@ const getTopTracks = async (): Promise<Track[]> => {
 export default function HomePage() {
     const [selectedSong, setSelectedSong] = useState<Track | null>(null);
     const [topTracks, setTopTracks] = useState<Track[]>([]);
+    const [searchResults, setSearchResults] = useState<Track[] | null>(null);
 
     useEffect(() => {
         getTopTracks().then(setTopTracks).catch(console.error);
     }, []);
 
+    const searchTracks = async (query: string) => {
+        if (!query.trim()) {
+            setSearchResults(null);
+            return;
+        }
+
+        const res = await api.get(`/api/spotify/search?q=${query}&limit=50`);
+        const items = res.data.tracks.items;
+
+        setSearchResults(items);
+    };
+
     return (
-        <div className="relative w-full min-h-screen text-white overflow-hidden">
+        <div className="w-full h-screen text-white overflow-hidden relative">
 
-            <Light variant="home" />
-
-            <div className="px-20 pt-10 fixed top-0 left-0 w-full z-30">
-                <Header isLoggedIn={true} nickname="닉네임" />
+            <div className="fixed top-0 left-0 w-full z-50">
+                <div className="px-20 py-6">
+                    <Header isLoggedIn={true} />
+                </div>
             </div>
 
+            <div className="absolute inset-0 -z-10">
+                <Light variant="home" />
+            </div>
 
-            <main className="px-20 pt-44 flex relative z-10">
+            <main
+                className="px-20 overflow-y-scroll"
+                style={{
+                    height: "calc(100vh - 130px)",
+                    marginTop: "150px"
+                }}
+            >
+                <div className="flex-1 pr-10 pb-20 max-w-[900px]">
 
-                <div className="flex-1 pr-10 max-w-[900px]">
-                    <SearchBar />
+                    <SearchBar onSearch={searchTracks} />
 
-                    <ScrollableSongList
-                        title="Spotify 인기 차트"
-                        songs={topTracks.slice(0, 10)}
-                        onSelectSong={(song) => setSelectedSong(song)}
-                    />
+                    {searchResults && (
+                        <>
+                            <h2 className="text-xl font-bold mt-10 mb-4">검색 결과</h2>
 
-                    <ScrollableSongList
-                        title="당신에게 맞는 추천 곡"
-                        songs={topTracks.slice(10, 20)}   // 임시 예시
-                        onSelectSong={(song) => setSelectedSong(song)}
-                    />
+                            {Array.from({ length: Math.ceil(searchResults.length / 7) }).map((_, idx) => {
+                                const start = idx * 7;
+                                const end = start + 7;
+                                const slice = searchResults.slice(start, end);
 
+                                return (
+                                    <ScrollableSongList
+                                        key={idx}
+                                        songs={slice}
+                                        onSelectSong={setSelectedSong}
+                                        hideTitle={true}
+                                    />
+                                );
+                            })}
+                        </>
+                    )}
+
+
+
+                    {!searchResults && (
+                        <>
+                            <ScrollableSongList
+                                title="Spotify 인기 차트"
+                                songs={topTracks.slice(0, 7)}
+                                onSelectSong={setSelectedSong}
+                            />
+
+                            <ScrollableSongList
+                                title="당신에게 맞는 추천 곡"
+                                songs={topTracks.slice(7, 14)}
+                                onSelectSong={setSelectedSong}
+                            />
+                            <ScrollableSongList
+                                title="Spotify 인기 차트"
+                                songs={topTracks.slice(14, 20)}
+                                onSelectSong={setSelectedSong}
+                            />
+                        </>
+                    )}
                 </div>
 
                 {selectedSong && (

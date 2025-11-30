@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import HeaderActive from "../assets/Header-active.svg";
 import HeaderNormal from "../assets/Header-nomal.svg";
@@ -6,16 +6,18 @@ import HeaderNormal from "../assets/Header-nomal.svg";
 type HeaderProps = {
     isLoggedIn: boolean;
     onLogout?: () => void;
+    nickname?: string;
 };
 
-export default function Header({ isLoggedIn, onLogout }: HeaderProps) {
+export default function Header({ isLoggedIn, onLogout, nickname}: HeaderProps) {
     const [isBookmarkActive, setIsBookmarkActive] = useState(false);
-    const [nickname, setNickname] = useState("");
 
-    useEffect(() => {
+    const [nicknameState] = useState(() => {
         const stored = localStorage.getItem("nickname");
-        if (stored) setNickname(stored);
-    }, []);
+        return stored ?? nickname ?? "";
+    });
+
+
 
     const handleBookmarkClick = () => {
         setIsBookmarkActive((prev) => !prev);
@@ -43,7 +45,7 @@ export default function Header({ isLoggedIn, onLogout }: HeaderProps) {
                     </button>
 
                     <span className="text-white text-xl font-semibold font-pretendard">
-                        {nickname}
+                        {nickname ?? nicknameState}
                     </span>
 
                     <button

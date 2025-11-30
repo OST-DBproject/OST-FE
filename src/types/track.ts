@@ -1,7 +1,13 @@
 export interface Track {
     id: string;
     name: string;
-    artistName: string;
-    albumName: string;
-    imageUrl: string | null;
+    imageUrl?: string;
+    artistName?: string;
+    album?: {
+        images: { url: string }[];
+    };
+    artists?: {
+        name: string;
+    }[];
 }
+
