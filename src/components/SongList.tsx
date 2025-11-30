@@ -13,10 +13,7 @@ export default function SongList({ onSelectSong, songs = [] }: SongListProps) {
     const [likes, setLikes] = useState<{ [key: string]: boolean }>({});
 
     const toggleLike = (id: string) => {
-        setLikes((prev) => ({
-            ...prev,
-            [id]: !prev[id],
-        }));
+        setLikes((prev) => ({ ...prev, [id]: !prev[id] }));
     };
 
     return (
@@ -39,30 +36,31 @@ export default function SongList({ onSelectSong, songs = [] }: SongListProps) {
                         onClick={() => onSelectSong(song)}
                     >
                         {/* 앨범 이미지 */}
-                        <div className="relative w-40 h-40 bg-[#1f1f1f] rounded-lg overflow-hidden">
+                        <div className="w-40 h-40 bg-[#1f1f1f] rounded-lg overflow-hidden">
                             {img && (
                                 <img
                                     src={img}
                                     className="w-full h-full object-cover"
                                 />
                             )}
+                        </div>
+
+                        <div className="mt-2 flex items-center justify-between">
+                            <div className="text-sm font-medium truncate w-[75%]">
+                                {song.name}
+                            </div>
 
                             <button
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     toggleLike(song.id);
                                 }}
-                                className="absolute top-2 right-2"
                             >
                                 <img
                                     src={likes[song.id] ? LikeActive : LikeNormal}
                                     className="w-6 h-6"
                                 />
                             </button>
-                        </div>
-
-                        <div className="mt-2 text-sm font-medium truncate">
-                            {song.name}
                         </div>
 
                         <div className="text-xs text-gray-400 truncate">

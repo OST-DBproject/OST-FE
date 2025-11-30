@@ -8,18 +8,32 @@ export default function AuthCallback() {
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         const code = params.get("code");
-
         if (!code) return;
 
         if (sessionStorage.getItem("code_used")) return;
         sessionStorage.setItem("code_used", "true");
 
         api.post("/auth/callback", { code })
-            .then((res) => {
-                localStorage.setItem("nickname", res.data.nickname);
+            .then(async (res) => {
+                const nickname = res.data.nickname;
+                const profileImage = res.data.profileImage;
+
+                const loginRes = await api.post("/user/login", null, {
+                    params: {
+                        spotifyId: res.data.spotifyId,
+                        name: nickname,
+                        image: profileImage
+
+                    }
+                });
+
+                localStorage.setItem("nickname", loginRes.data.displayName);
+                localStorage.setItem("spotifyId", loginRes.data.spotifyId);
+
                 navigate("/home");
             })
             .catch((err) => console.error(err));
+
     }, []);
 
 

@@ -30,7 +30,7 @@ export default function Header({ isLoggedIn, onLogout, nickname}: HeaderProps) {
 
     return (
         <header className="w-full flex items-center justify-between px-6 py-4 border-b border-gray-300">
-            <Link to="/" className="text-white text-5xl font-hs font-nomal">
+            <Link to="/home" className="text-white text-5xl font-hs font-nomal">
                 OST
             </Link>
 
@@ -44,14 +44,14 @@ export default function Header({ isLoggedIn, onLogout, nickname}: HeaderProps) {
                         />
                     </button>
 
-                    <span className="text-white text-xl font-semibold font-pretendard">
+                    <span className="text-white text-xl font-pretendard">
                         {nickname ?? nicknameState}
                     </span>
 
                     <button
                         type="button"
                         onClick={handleLogout}
-                        className="text-hover-white text-xl font-semibold font-pretendard"
+                        className="text-hover-white text-xl font-pretendard"
                     >
                         로그아웃
                     </button>

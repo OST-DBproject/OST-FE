@@ -27,7 +27,7 @@ export default function HomePage() {
             return;
         }
 
-        const res = await api.get(`/api/spotify/search?q=${query}&limit=50`);
+        const res = await api.get(`/api/spotify/search?q=${query}&limit=49`);
         const items = res.data.tracks.items;
 
         setSearchResults(items);
@@ -104,6 +104,7 @@ export default function HomePage() {
 
                 {selectedSong && (
                     <SongDetailPanel
+                        key={selectedSong.id}
                         song={selectedSong}
                         onClose={() => setSelectedSong(null)}
                     />

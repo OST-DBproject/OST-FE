@@ -15,7 +15,7 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
     };
 
     return (
-        <div className="w-full bg-background opacity-40 h-12 rounded-sm flex items-center px-4">
+        <div className="w-full bg-[rgba(28,29,25,0.5)] h-12 rounded-sm flex items-center px-4">
             <input
                 placeholder="검색어를 입력하세요"
                 className="flex-1 bg-transparent outline-none text-white"
