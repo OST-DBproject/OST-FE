@@ -1,5 +1,5 @@
-import {useState, useEffect} from "react";
-import type {Track} from "../types/track.ts";
+import { useState, useEffect } from "react";
+import type { Track } from "../types/track.ts";
 import PlayIcon from "../assets/play.svg";
 import LikeNormal from "../assets/Like-normal.svg";
 import LikeActive from "../assets/Like-active.svg";
@@ -24,7 +24,7 @@ interface CommentItem {
     };
 }
 
-export default function SongDetailPanel({song, onClose}: SongDetailPanelProps) {
+export default function SongDetailPanel({ song, onClose }: SongDetailPanelProps) {
     const img =
         song.imageUrl ||
         song.album?.images?.[0]?.url ||
@@ -38,14 +38,12 @@ export default function SongDetailPanel({song, onClose}: SongDetailPanelProps) {
     const userId = localStorage.getItem("spotifyId") ?? "";
 
     const [progress, setProgress] = useState(0);
-    const [isPlaying, setIsPlaying] = useState(false);
     const [isCommentOpen, setIsCommentOpen] = useState(false);
     const [liked, setLiked] = useState(false);
-
     const [comments, setComments] = useState<CommentItem[]>([]);
     const [newComment, setNewComment] = useState("");
+    const [isPlaying, setIsPlaying] = useState(false);
 
-    // 0~30초 progress bar
     useEffect(() => {
         if (!isPlaying) return;
 
@@ -68,14 +66,13 @@ export default function SongDetailPanel({song, onClose}: SongDetailPanelProps) {
 
         const fetchComments = async () => {
             const res = await api.get("/comments", {
-                params: {trackId: song.id}
+                params: { trackId: song.id }
             });
             setComments(res.data);
         };
 
         fetchComments();
     }, [song.id]);
-
 
     const handleAddComment = async () => {
         if (!newComment.trim()) return;
@@ -93,18 +90,14 @@ export default function SongDetailPanel({song, onClose}: SongDetailPanelProps) {
         });
 
         const savedComment = res.data;
-
         setComments(prev => [savedComment, ...prev]);
         setNewComment("");
     };
 
-
-    // 댓글 삭제
     const handleDelete = async (id: number) => {
         await api.delete(`/comment/${id}`);
         setComments(prev => prev.filter(c => c.id !== id));
     };
-
 
     return (
         <div
@@ -118,11 +111,11 @@ export default function SongDetailPanel({song, onClose}: SongDetailPanelProps) {
             }}
         >
             <button onClick={onClose} className="pb-2 float-right">
-                <img src={CloseIcon} className="w-6 h-6"/>
+                <img src={CloseIcon} className="w-6 h-6" />
             </button>
 
             <div className="w-full h-60 bg-[#333] overflow-hidden">
-                {img && <img src={img} className="w-full h-full object-cover"/>}
+                {img && <img src={img} className="w-full h-full object-cover" />}
             </div>
 
             <div className="mt-5 flex justify-between items-start">
@@ -148,7 +141,7 @@ export default function SongDetailPanel({song, onClose}: SongDetailPanelProps) {
                     <div className="relative h-1.5 bg-background rounded-lg overflow-hidden">
                         <div
                             className="absolute left-0 top-0 h-full bg-primary-300"
-                            style={{width: `${(progress / 30) * 100}%`}}
+                            style={{ width: `${(progress / 30) * 100}%` }}
                         />
                     </div>
 
@@ -165,7 +158,7 @@ export default function SongDetailPanel({song, onClose}: SongDetailPanelProps) {
                     }}
                     className="w-12 h-12 bg-primary-300 rounded-full flex items-center justify-center"
                 >
-                    <img src={PlayIcon} className="w-5 h-5 pl-[2px]"/>
+                    <img src={PlayIcon} className="w-5 h-5 pl-[2px]" />
                 </button>
             </div>
 
@@ -175,7 +168,7 @@ export default function SongDetailPanel({song, onClose}: SongDetailPanelProps) {
                         onClick={() => setIsCommentOpen(true)}
                         className="flex items-center gap-2 w-full text-left"
                     >
-                        <img src={ChatIcon} className="w-5 h-5"/>
+                        <img src={ChatIcon} className="w-5 h-5" />
                         <span className="text-sm text-gray-300">{comments.length}</span>
                     </button>
                 )}
@@ -184,7 +177,7 @@ export default function SongDetailPanel({song, onClose}: SongDetailPanelProps) {
                     <>
                         <div className="flex justify-between items-center mb-3">
                             <div className="flex items-center gap-2">
-                                <img src={ChatIcon} className="w-5 h-5"/>
+                                <img src={ChatIcon} className="w-5 h-5" />
                                 <span className="text-sm text-gray-300">{comments.length}</span>
                             </div>
 
@@ -192,7 +185,7 @@ export default function SongDetailPanel({song, onClose}: SongDetailPanelProps) {
                                 onClick={() => setIsCommentOpen(false)}
                                 className="text-gray-300 hover:text-white"
                             >
-                                <img src={CloseIcon} className="w-5 h-5"/>
+                                <img src={CloseIcon} className="w-5 h-5" />
                             </button>
                         </div>
 
@@ -212,12 +205,11 @@ export default function SongDetailPanel({song, onClose}: SongDetailPanelProps) {
                                         }
                                     }}
                                 />
-
                             </div>
 
                             {comments.map((c) => (
                                 <div key={c.id} className="flex items-center gap-3">
-                                    <div className="w-5 h-5 bg-white rounded-full"/>
+                                    <div className="w-5 h-5 bg-white rounded-full" />
                                     <span className="text-sm">{c.content}</span>
 
                                     {c.user.spotifyId === userId && (
@@ -225,7 +217,7 @@ export default function SongDetailPanel({song, onClose}: SongDetailPanelProps) {
                                             onClick={() => handleDelete(c.id)}
                                             className="text-xs text-white ml-auto"
                                         >
-                                            <img src={CloseIcon} className="w-5 h-5"/>
+                                            <img src={CloseIcon} className="w-5 h-5" />
                                         </button>
                                     )}
                                 </div>

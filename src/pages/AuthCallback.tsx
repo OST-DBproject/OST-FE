@@ -17,6 +17,7 @@ export default function AuthCallback() {
             .then(async (res) => {
                 const nickname = res.data.nickname;
                 const profileImage = res.data.profileImage;
+                const spotifyAccessToken = res.data.accessToken;
 
                 const loginRes = await api.post("/user/login", null, {
                     params: {
@@ -29,6 +30,7 @@ export default function AuthCallback() {
 
                 localStorage.setItem("nickname", loginRes.data.displayName);
                 localStorage.setItem("spotifyId", loginRes.data.spotifyId);
+                localStorage.setItem("spotifyAccessToken", spotifyAccessToken);
 
                 navigate("/home");
             })
