@@ -1,20 +1,20 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import api from "../api/axios.ts";
 
 export default function AuthCallback() {
     const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
+        const params = new URLSearchParams(location.search);
         const code = params.get("code");
         if (!code) return;
 
-        if (sessionStorage.getItem("code_used")) return;
-        sessionStorage.setItem("code_used", "true");
+        const fetchData = async () => {
+            try {
+                const res = await api.post("/auth/callback", { code });
 
-        api.post("/auth/callback", { code })
-            .then(async (res) => {
                 const nickname = res.data.nickname;
                 const profileImage = res.data.profileImage;
                 const spotifyAccessToken = res.data.accessToken;
@@ -24,7 +24,6 @@ export default function AuthCallback() {
                         spotifyId: res.data.spotifyId,
                         name: nickname,
                         image: profileImage
-
                     }
                 });
 
@@ -33,14 +32,14 @@ export default function AuthCallback() {
                 localStorage.setItem("spotifyId", loginRes.data.spotifyId);
                 localStorage.setItem("spotifyAccessToken", spotifyAccessToken);
 
-                console.log("loginRes.data =", loginRes.data);
+                navigate("/home", { replace: true });
+            } catch (err) {
+                console.error(err);
+            }
+        };
 
-                navigate("/home");
-            })
-            .catch((err) => console.error(err));
-
-    }, []);
-
+        fetchData();
+    }, [location.search]);
 
     return (
         <div style={{ color: "white", padding: "40px" }}>
