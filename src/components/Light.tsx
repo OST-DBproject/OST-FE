@@ -1,11 +1,32 @@
 import LightImg from "../assets/lights.svg";
 
 type LightProps = {
-    variant: "intro" | "main" | "home";
+    variant: "intro" | "main" | "home" | "bookmark";
     scrollY?: number;
 };
 
 export default function Light({ variant, scrollY = 0 }: LightProps) {
+
+    if (variant === "bookmark") {
+        return (
+            <div
+                className="pointer-events-none fixed z-0"
+                style={{
+                    bottom: "-550px",
+                    right: "-500px",
+                }}
+            >
+                <img
+                    src={LightImg}
+                    style={{
+                        filter: "blur(60px)",
+                        opacity: 0.9,
+                        width: 1200,
+                    }}
+                />
+            </div>
+        );
+    }
 
     if (variant === "home") {
         return (
@@ -26,7 +47,6 @@ export default function Light({ variant, scrollY = 0 }: LightProps) {
             </div>
         );
     }
-
 
     const introStartY = 260;
     const mainTargetY = -220;
@@ -57,3 +77,4 @@ export default function Light({ variant, scrollY = 0 }: LightProps) {
         </div>
     );
 }
+

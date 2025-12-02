@@ -3,7 +3,7 @@ import LikeNormal from "../assets/Like-normal.svg";
 import LikeActive from "../assets/Like-active.svg";
 
 interface Props {
-    track: BookmarkTrack;
+    track: BookmarkTrack & { imageUrl?: string };
     isLiked: boolean;
     onToggleLike: (spotifyId: string) => void;
 }
@@ -13,7 +13,16 @@ export default function VerticalSongItem({ track, isLiked, onToggleLike }: Props
         <div className="flex items-center justify-between py-3 px-2 hover:bg-white/10 rounded-lg">
 
             <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-gray-700 rounded" />
+
+                {track.imageUrl ? (
+                    <img
+                        src={track.imageUrl}
+                        alt={track.trackName}
+                        className="w-12 h-12 rounded object-cover"
+                    />
+                ) : (
+                    <div className="w-12 h-12 bg-gray-700 rounded" />
+                )}
 
                 <div>
                     <div className="text-sm font-semibold">{track.trackName}</div>

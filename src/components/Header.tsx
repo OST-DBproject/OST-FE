@@ -1,17 +1,17 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";   // ← 추가
+import { Link, useNavigate } from "react-router-dom";
 import HeaderActive from "../assets/Header-active.svg";
 import HeaderNormal from "../assets/Header-nomal.svg";
+import { useState } from "react";
 
 type HeaderProps = {
     isLoggedIn: boolean;
     onLogout?: () => void;
     nickname?: string;
+    isBookmarkPage?: boolean;
 };
 
-export default function Header({ isLoggedIn, onLogout, nickname}: HeaderProps) {
-    const navigate = useNavigate();   // ← 추가
-    const [isBookmarkActive, setIsBookmarkActive] = useState(false);
+export default function Header({ isLoggedIn, onLogout, nickname, isBookmarkPage }: HeaderProps) {
+    const navigate = useNavigate();
 
     const [nicknameState] = useState(() => {
         const stored = localStorage.getItem("nickname");
@@ -19,8 +19,7 @@ export default function Header({ isLoggedIn, onLogout, nickname}: HeaderProps) {
     });
 
     const handleBookmarkClick = () => {
-        setIsBookmarkActive((prev) => !prev);
-        navigate("/book");   // ← 여기서 바로 /book 페이지로 이동
+        navigate("/book");
     };
 
     const handleLogout = () => {
@@ -30,6 +29,7 @@ export default function Header({ isLoggedIn, onLogout, nickname}: HeaderProps) {
 
     return (
         <header className="w-full flex items-center justify-between px-6 py-4 border-b border-gray-300">
+
             <Link to="/home" className="text-white text-5xl font-hs font-nomal">
                 OST
             </Link>
@@ -38,14 +38,14 @@ export default function Header({ isLoggedIn, onLogout, nickname}: HeaderProps) {
                 <div className="flex items-center gap-4">
                     <button type="button" onClick={handleBookmarkClick}>
                         <img
-                            src={isBookmarkActive ? HeaderActive : HeaderNormal}
+                            src={isBookmarkPage ? HeaderActive : HeaderNormal}
                             alt="bookmark"
                             className="w-8 h-8"
                         />
                     </button>
 
                     <span className="text-white text-xl font-pretendard">
-                        {nickname ?? nicknameState}
+                        {nicknameState}
                     </span>
 
                     <button
