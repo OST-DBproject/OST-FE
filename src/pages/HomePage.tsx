@@ -17,9 +17,60 @@ export default function HomePage() {
     const [topTracks, setTopTracks] = useState<Track[]>([]);
     const [searchResults, setSearchResults] = useState<Track[] | null>(null);
 
+    const [likedTrackIds, setLikedTrackIds] = useState<Set<string>>(new Set());
+    const userId = localStorage.getItem("userId");
+
     useEffect(() => {
-        getTopTracks().then(setTopTracks).catch(console.error);
-    }, []);
+        if (!userId) return;
+
+        const fetchLiked = async () => {
+            try {
+                const res = await api.get("/track/liked", { params: { userId }});
+
+                const ids = res.data.map(
+                    (t: { spotifyTrackId: string }) => t.spotifyTrackId
+                );
+
+                setLikedTrackIds(new Set(ids));
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+        fetchLiked();
+    }, [userId]);
+
+
+    const toggleLike = async (trackId: string) => {
+        if (!userId) {
+            alert("로그인이 필요합니다.");
+            return;
+        }
+
+        const isLiked = likedTrackIds.has(trackId);
+
+        try {
+            if (isLiked) {
+                await api.delete("/track/unlike", {
+                    params: { userId, trackId }
+                });
+            } else {
+                await api.post("/track/like", null, {
+                    params: { userId, trackId }
+                });
+            }
+
+            setLikedTrackIds(prev => {
+                const next = new Set(prev);
+                if (isLiked) next.delete(trackId);
+                else next.add(trackId);
+                return next;
+            });
+
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
     const searchTracks = async (query: string) => {
         if (!query.trim()) {
@@ -32,6 +83,11 @@ export default function HomePage() {
 
         setSearchResults(items);
     };
+
+    useEffect(() => {
+        getTopTracks().then(setTopTracks).catch(console.error);
+    }, []);
+
 
     return (
         <div className="w-full h-screen text-white overflow-hidden relative">
@@ -59,7 +115,7 @@ export default function HomePage() {
 
                     {searchResults && (
                         <>
-                            <h2 className="text-xl font-bold mt-10 mb-4">검색 결과</h2>
+                            <h2 className="text-lg font-bold mt-10 mb-4">검색 결과</h2>
 
                             {Array.from({ length: Math.ceil(searchResults.length / 7) }).map((_, idx) => {
                                 const start = idx * 7;
@@ -71,6 +127,8 @@ export default function HomePage() {
                                         key={idx}
                                         songs={slice}
                                         onSelectSong={setSelectedSong}
+                                        likedTrackIds={likedTrackIds}
+                                        onToggleLike={toggleLike}
                                         hideTitle={true}
                                     />
                                 );
@@ -78,25 +136,30 @@ export default function HomePage() {
                         </>
                     )}
 
-
-
                     {!searchResults && (
                         <>
                             <ScrollableSongList
                                 title="Spotify 인기 차트"
                                 songs={topTracks.slice(0, 7)}
                                 onSelectSong={setSelectedSong}
+                                likedTrackIds={likedTrackIds}
+                                onToggleLike={toggleLike}
                             />
 
                             <ScrollableSongList
                                 title="당신에게 맞는 추천 곡"
                                 songs={topTracks.slice(7, 14)}
                                 onSelectSong={setSelectedSong}
+                                likedTrackIds={likedTrackIds}
+                                onToggleLike={toggleLike}
                             />
+
                             <ScrollableSongList
                                 title="Spotify 인기 차트"
                                 songs={topTracks.slice(14, 20)}
                                 onSelectSong={setSelectedSong}
+                                likedTrackIds={likedTrackIds}
+                                onToggleLike={toggleLike}
                             />
                         </>
                     )}
@@ -107,6 +170,8 @@ export default function HomePage() {
                         key={selectedSong.id}
                         song={selectedSong}
                         onClose={() => setSelectedSong(null)}
+                        liked={likedTrackIds.has(selectedSong.spotify_track_id ?? selectedSong.id)}
+                        onToggleLike={toggleLike}
                     />
                 )}
             </main>

@@ -10,6 +10,8 @@ import api from "../api/axios";
 interface SongDetailPanelProps {
     song: Track;
     onClose: () => void;
+    liked: boolean;
+    onToggleLike: (trackId: string) => void;
 }
 
 interface CommentItem {
@@ -24,7 +26,13 @@ interface CommentItem {
     };
 }
 
-export default function SongDetailPanel({ song, onClose }: SongDetailPanelProps) {
+export default function SongDetailPanel({
+                                            song,
+                                            onClose,
+                                            liked,
+                                            onToggleLike
+                                        }: SongDetailPanelProps) {
+
     const img =
         song.imageUrl ||
         song.album?.images?.[0]?.url ||
@@ -35,14 +43,47 @@ export default function SongDetailPanel({ song, onClose }: SongDetailPanelProps)
         song.artists?.[0]?.name ||
         "";
 
-    const userId = localStorage.getItem("spotifyId") ?? "";
-
+    const spotifyId = localStorage.getItem("spotifyId") ?? "";
     const [progress, setProgress] = useState(0);
     const [isCommentOpen, setIsCommentOpen] = useState(false);
-    const [liked, setLiked] = useState(false);
     const [comments, setComments] = useState<CommentItem[]>([]);
     const [newComment, setNewComment] = useState("");
     const [isPlaying, setIsPlaying] = useState(false);
+
+    useEffect(() => {
+        if (!song.id) return;
+
+        const fetchComments = async () => {
+            const res = await api.get("/comments", {
+                params: { trackId: song.id }
+            });
+            setComments(res.data);
+        };
+
+        fetchComments();
+    }, [song.id]);
+
+    const handleAddComment = async () => {
+        if (!newComment.trim()) return;
+        if (!spotifyId) return;
+
+        const res = await api.post("/comment", null, {
+            params: {
+                spotifyId: spotifyId,
+                trackId: song.id,
+                content: newComment
+            }
+        });
+
+        const savedComment = res.data;
+        setComments(prev => [savedComment, ...prev]);
+        setNewComment("");
+    };
+
+    const handleDelete = async (id: number) => {
+        await api.delete(`/comment/${id}`);
+        setComments(prev => prev.filter(c => c.id !== id));
+    };
 
     useEffect(() => {
         if (!isPlaying) return;
@@ -61,44 +102,6 @@ export default function SongDetailPanel({ song, onClose }: SongDetailPanelProps)
         return () => clearInterval(interval);
     }, [isPlaying]);
 
-    useEffect(() => {
-        if (!song.id) return;
-
-        const fetchComments = async () => {
-            const res = await api.get("/comments", {
-                params: { trackId: song.id }
-            });
-            setComments(res.data);
-        };
-
-        fetchComments();
-    }, [song.id]);
-
-    const handleAddComment = async () => {
-        if (!newComment.trim()) return;
-        if (!userId) {
-            alert("로그인이 필요합니다.");
-            return;
-        }
-
-        const res = await api.post("/comment", null, {
-            params: {
-                spotifyId: userId,
-                trackId: song.id,
-                content: newComment
-            }
-        });
-
-        const savedComment = res.data;
-        setComments(prev => [savedComment, ...prev]);
-        setNewComment("");
-    };
-
-    const handleDelete = async (id: number) => {
-        await api.delete(`/comment/${id}`);
-        setComments(prev => prev.filter(c => c.id !== id));
-    };
-
     return (
         <div
             className="w-[340px] min-h-[650px] max-h-[650px] rounded-lg p-5 shadow-lg text-white"
@@ -107,7 +110,7 @@ export default function SongDetailPanel({ song, onClose }: SongDetailPanelProps)
                 right: "80px",
                 top: "150px",
                 zIndex: 30,
-                background: "rgba(28,29,25,0.8)",
+                background: "rgba(28,29,25,0.8)"
             }}
         >
             <button onClick={onClose} className="pb-2 float-right">
@@ -128,7 +131,7 @@ export default function SongDetailPanel({ song, onClose }: SongDetailPanelProps)
                     </div>
                 </div>
 
-                <button onClick={() => setLiked(prev => !prev)}>
+                <button onClick={() => onToggleLike(song.id)}>
                     <img
                         src={liked ? LikeActive : LikeNormal}
                         className="w-7 h-7"
@@ -212,7 +215,7 @@ export default function SongDetailPanel({ song, onClose }: SongDetailPanelProps)
                                     <div className="w-5 h-5 bg-white rounded-full" />
                                     <span className="text-sm">{c.content}</span>
 
-                                    {c.user.spotifyId === userId && (
+                                    {c.user.spotifyId === spotifyId && (
                                         <button
                                             onClick={() => handleDelete(c.id)}
                                             className="text-xs text-white ml-auto"

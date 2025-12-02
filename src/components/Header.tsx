@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";   // ← 추가
 import HeaderActive from "../assets/Header-active.svg";
 import HeaderNormal from "../assets/Header-nomal.svg";
 
@@ -10,6 +10,7 @@ type HeaderProps = {
 };
 
 export default function Header({ isLoggedIn, onLogout, nickname}: HeaderProps) {
+    const navigate = useNavigate();   // ← 추가
     const [isBookmarkActive, setIsBookmarkActive] = useState(false);
 
     const [nicknameState] = useState(() => {
@@ -17,10 +18,9 @@ export default function Header({ isLoggedIn, onLogout, nickname}: HeaderProps) {
         return stored ?? nickname ?? "";
     });
 
-
-
     const handleBookmarkClick = () => {
         setIsBookmarkActive((prev) => !prev);
+        navigate("/book");   // ← 여기서 바로 /book 페이지로 이동
     };
 
     const handleLogout = () => {

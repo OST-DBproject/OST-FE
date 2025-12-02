@@ -28,9 +28,12 @@ export default function AuthCallback() {
                     }
                 });
 
+                localStorage.setItem("userId", loginRes.data.id.toString());
                 localStorage.setItem("nickname", loginRes.data.displayName);
                 localStorage.setItem("spotifyId", loginRes.data.spotifyId);
                 localStorage.setItem("spotifyAccessToken", spotifyAccessToken);
+
+                console.log("loginRes.data =", loginRes.data);
 
                 navigate("/home");
             })

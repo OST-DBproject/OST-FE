@@ -1,20 +1,20 @@
-import { useState } from "react";
-import type { Track } from "../types/track.ts";
-
+import type { UnifiedTrack } from "../types/track";
 import LikeNormal from "../assets/Like-normal.svg";
 import LikeActive from "../assets/Like-active.svg";
 
 interface SongListProps {
-    onSelectSong: (song: Track) => void;
-    songs?: Track[];
+    onSelectSong: (song: UnifiedTrack) => void;
+    songs?: UnifiedTrack[];
+    likedTrackIds: Set<string>;
+    onToggleLike: (trackId: string) => void;
 }
 
-export default function SongList({ onSelectSong, songs = [] }: SongListProps) {
-    const [likes, setLikes] = useState<{ [key: string]: boolean }>({});
-
-    const toggleLike = (id: string) => {
-        setLikes((prev) => ({ ...prev, [id]: !prev[id] }));
-    };
+export default function SongList({
+                                     onSelectSong,
+                                     songs = [],
+                                     likedTrackIds,
+                                     onToggleLike
+                                 }: SongListProps) {
 
     return (
         <div className="flex gap-6 py-4">
@@ -29,13 +29,16 @@ export default function SongList({ onSelectSong, songs = [] }: SongListProps) {
                     song.artists?.[0]?.name ||
                     "";
 
+                const spotifyId = song.spotifyTrackId ?? song.id;
+
+                const isLiked = likedTrackIds.has(spotifyId);
+
                 return (
                     <div
-                        key={song.id}
+                        key={spotifyId}
                         className="cursor-pointer w-40"
                         onClick={() => onSelectSong(song)}
                     >
-                        {/* 앨범 이미지 */}
                         <div className="w-40 h-40 bg-[#1f1f1f] rounded-lg overflow-hidden">
                             {img && (
                                 <img
@@ -53,11 +56,11 @@ export default function SongList({ onSelectSong, songs = [] }: SongListProps) {
                             <button
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    toggleLike(song.id);
+                                    onToggleLike(spotifyId);
                                 }}
                             >
                                 <img
-                                    src={likes[song.id] ? LikeActive : LikeNormal}
+                                    src={isLiked ? LikeActive : LikeNormal}
                                     className="w-6 h-6"
                                 />
                             </button>
