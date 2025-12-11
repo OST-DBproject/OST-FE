@@ -139,24 +139,16 @@ export default function HomePage() {
                     {!searchResults && (
                         <>
                             <ScrollableSongList
-                                title="Spotify 인기 차트"
-                                songs={topTracks.slice(0, 7)}
+                                title="Spotify 인기 곡"
+                                songs={topTracks.slice(0, 5)}
                                 onSelectSong={setSelectedSong}
                                 likedTrackIds={likedTrackIds}
                                 onToggleLike={toggleLike}
                             />
 
                             <ScrollableSongList
-                                title="당신에게 맞는 추천 곡"
-                                songs={topTracks.slice(7, 14)}
-                                onSelectSong={setSelectedSong}
-                                likedTrackIds={likedTrackIds}
-                                onToggleLike={toggleLike}
-                            />
-
-                            <ScrollableSongList
-                                title="Spotify 인기 차트"
-                                songs={topTracks.slice(14, 20)}
+                                title="2025 출시 노래"
+                                songs={topTracks.slice(5, 10)}
                                 onSelectSong={setSelectedSong}
                                 likedTrackIds={likedTrackIds}
                                 onToggleLike={toggleLike}
